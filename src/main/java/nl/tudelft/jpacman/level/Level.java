@@ -264,6 +264,13 @@ public class Level {
      */
     private void updateObservers() {
         if (!isAnyPlayerAlive()) {
+            for (Player player : players) {
+                if (player.hasRemainingLives()) {
+                    revivePlayer(player);
+                    return;
+                }
+            }
+            // When the player has no remaining lives
             for (LevelObserver observer : observers) {
                 observer.levelLost();
             }
@@ -273,6 +280,18 @@ public class Level {
                 observer.levelWon();
             }
         }
+    }
+
+    /**
+     * Revives the player.
+     *
+     * @param player
+     *            The player to revive.
+     */
+    private void revivePlayer(Player player) {
+        player.setAlive(true);
+        Square startSquare = startSquares.get(startSquareIndex);
+        player.occupy(startSquare);
     }
 
     /**

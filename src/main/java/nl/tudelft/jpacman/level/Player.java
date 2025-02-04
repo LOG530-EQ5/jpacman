@@ -154,4 +154,11 @@ public class Player extends Unit {
     private void decrementLives() {
         lives--;
     }
+
+    /**
+     * Boolean to check if the player has lives left.
+     */
+    public boolean hasRemainingLives() {
+        return lives > 0;
+    }
 }
