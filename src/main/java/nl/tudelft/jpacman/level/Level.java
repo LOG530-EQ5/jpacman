@@ -263,16 +263,38 @@ public class Level {
      * Updates the observers about the state of this level.
      */
     private void updateObservers() {
-        if (!isAnyPlayerAlive()) {
-            for (LevelObserver observer : observers) {
-                observer.levelLost();
-            }
+        
+        boolean playersNotAlive = validationPlayersNotAlive();
+        boolean validationPelletsTakes = validationAllPelletsTakes();
+
+        //if the players are alives and not all pelletsTake continue the level
+        if(!playersNotAlive && !validationPelletsTakes){
+            return;
         }
-        if (remainingPellets() == 0) {
-            for (LevelObserver observer : observers) {
+
+        for (LevelObserver observer : observers) {
+            if(playersNotAlive){
+                observer.levelLost();
+            } else{
                 observer.levelWon();
             }
         }
+    }
+
+    /**
+     * Validate if the level is won or not
+     * @return return a boolean true if the players have take all the pellets and false if pellets remain on the board.
+     */
+    private boolean validationAllPelletsTakes(){
+        return  remainingPellets() == 0;
+    }
+
+    /**
+     * Validate if the players have take all is life
+     * @return return a boolean true if the players is not alive and false if the players is alive.
+     */
+    private boolean validationPlayersNotAlive(){
+        return  !isAnyPlayerAlive();
     }
 
     /**
