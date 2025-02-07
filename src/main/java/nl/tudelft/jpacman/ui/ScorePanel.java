@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static javax.swing.SwingConstants.CENTER;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -53,11 +54,11 @@ public class ScorePanel extends JPanel {
         setLayout(new GridLayout(2, players.size()));
 
         for (int i = 1; i <= players.size(); i++) {
-            add(new JLabel("Player " + i, JLabel.CENTER));
+            add(new JLabel("Player " + i, CENTER));
         }
         scoreLabels = new LinkedHashMap<>();
         for (Player player : players) {
-            JLabel scoreLabel = new JLabel("0", JLabel.CENTER);
+            JLabel scoreLabel = new JLabel("0", CENTER);
             scoreLabels.put(player, scoreLabel);
             add(scoreLabel);
         }
