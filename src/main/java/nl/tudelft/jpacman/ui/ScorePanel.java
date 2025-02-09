@@ -31,16 +31,27 @@ public class ScorePanel extends JPanel {
     private final Map<Player, JLabel> scoreLabels;
 
     /**
+     * The map of players and the labels their lives are on.
+     */
+    private final Map<Player, JLabel> livesLabels;
+
+    /**
      * The default way in which the score is shown.
      */
-    public static final ScoreFormatter DEFAULT_SCORE_FORMATTER =
+    public static final NumberFormatter DEFAULT_SCORE_FORMATTER =
         (Player player) -> String.format("Score: %3d", player.getScore());
 
     /**
      * The way to format the score information.
      */
-    private ScoreFormatter scoreFormatter = DEFAULT_SCORE_FORMATTER;
+    public static final NumberFormatter DEFAULT_LIVES_FORMATTER =
+        (Player player) -> String.format("Lives: %d", player.getLives());
 
+    /**
+     * The way to format the score and lives information.
+     */
+    private NumberFormatter scoreFormatter = DEFAULT_SCORE_FORMATTER;
+    private NumberFormatter livesFormatter = DEFAULT_LIVES_FORMATTER;
     /**
      * Creates a new score panel with a column for each player.
      *
@@ -51,11 +62,19 @@ public class ScorePanel extends JPanel {
         super();
         assert players != null;
 
-        setLayout(new GridLayout(2, players.size()));
+        setLayout(new GridLayout(3, players.size()));
 
         for (int i = 1; i <= players.size(); i++) {
             add(new JLabel("Player " + i, CENTER));
         }
+
+        livesLabels = new LinkedHashMap<>();
+        for (Player player : players) {
+            JLabel livesLabel = new JLabel("3", JLabel.CENTER);
+            livesLabels.put(player, livesLabel);
+            add(livesLabel);
+        }
+
         scoreLabels = new LinkedHashMap<>();
         for (Player player : players) {
             JLabel scoreLabel = new JLabel("0", CENTER);
@@ -76,13 +95,15 @@ public class ScorePanel extends JPanel {
             }
             score += scoreFormatter.format(player);
             entry.getValue().setText(score);
+            String lives = livesFormatter.format(player);
+            livesLabels.get(player).setText(lives);
         }
     }
 
     /**
      * Provide means to format the score for a given player.
      */
-    public interface ScoreFormatter {
+    public interface NumberFormatter  {
 
         /**
          * Format the score of a given player.
@@ -96,7 +117,7 @@ public class ScorePanel extends JPanel {
      * Let the score panel use a dedicated score formatter.
      * @param scoreFormatter Score formatter to be used.
      */
-    public void setScoreFormatter(ScoreFormatter scoreFormatter) {
+    public void setNumberFormatter(NumberFormatter scoreFormatter) {
         assert scoreFormatter != null;
         this.scoreFormatter = scoreFormatter;
     }

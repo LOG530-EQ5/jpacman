@@ -271,6 +271,9 @@ public class Level {
         if(!playersNotAlive && !validationPelletsTakes){
             return;
         }
+        if(playersHasLives()){
+            return;
+        }
 
         for (LevelObserver observer : observers) {
             if(playersNotAlive){
@@ -279,6 +282,18 @@ public class Level {
                 observer.levelWon();
             }
         }
+    }
+
+    /**
+     * Revives the player.
+     *
+     * @param player
+     *            The player to revive.
+     */
+    private void revivePlayer(Player player) {
+        player.setAlive(true);
+        Square startSquare = startSquares.get(startSquareIndex);
+        player.occupy(startSquare);
     }
 
     /**
@@ -295,6 +310,20 @@ public class Level {
      */
     private boolean validationPlayersNotAlive(){
         return  !isAnyPlayerAlive();
+    }
+
+    /**
+     * Validate if the players has lives remaining
+     * @return return a boolean true if the players still has lives and false if the players is alive.
+     */
+    private boolean playersHasLives(){
+        for(Player player : players){
+            if(player.getLives() > 0 && !player.isAlive()){
+                revivePlayer(player);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
