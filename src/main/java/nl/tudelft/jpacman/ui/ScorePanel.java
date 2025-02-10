@@ -1,6 +1,7 @@
 package nl.tudelft.jpacman.ui;
 
 import java.awt.GridLayout;
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class ScorePanel extends JPanel {
     /**
      * The map of players and the labels their lives are on.
      */
-    private final Map<Player, JLabel> livesLabels;
+    private transient  final Map<Player, JLabel> livesLabels;
 
     /**
      * The default way in which the score is shown.
@@ -70,7 +71,7 @@ public class ScorePanel extends JPanel {
 
         livesLabels = new LinkedHashMap<>();
         for (Player player : players) {
-            JLabel livesLabel = new JLabel("3", JLabel.CENTER);
+            JLabel livesLabel = new JLabel("3", CENTER);
             livesLabels.put(player, livesLabel);
             add(livesLabel);
         }
@@ -103,7 +104,7 @@ public class ScorePanel extends JPanel {
     /**
      * Provide means to format the score for a given player.
      */
-    public interface NumberFormatter  {
+    public interface NumberFormatter extends Serializable {
 
         /**
          * Format the score of a given player.
