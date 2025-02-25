@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SquareTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Tests in 'jpacman.test' Coverage Results</a> &gt; <a href="index.source.html" class="el_package">nl.tudelft.jpacman.board</a> &gt; <span class="el_source">SquareTest.java</span></div><h1>SquareTest.java</h1><pre class="source lang-java linenums">package nl.tudelft.jpacman.board;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+
+/**
+ * Test suite to confirm the public API of {@link Square} works as desired.
+ *
+ * @author Jeroen Roosen 
+ */
+<span class="nc" id="L14">class SquareTest {</span>
+
+    /**
+     * The square under test.
+     */
+    private Square square;
+
+    /**
+     * Resets the square under test.
+     */
+    @BeforeEach
+    void setUp() {
+<span class="nc" id="L26">        square = new BasicSquare();</span>
+<span class="nc" id="L27">    }</span>
+
+    /**
+     * Assert that the square holds the occupant once it has occupied it.
+     */
+    @Test
+    void testOccupy() {
+<span class="nc" id="L34">        Unit occupant = mock(Unit.class);</span>
+<span class="nc" id="L35">        square.put(occupant);</span>
+
+<span class="nc" id="L37">        assertThat(square.getOccupants()).contains(occupant);</span>
+<span class="nc" id="L38">    }</span>
+
+    /**
+     * Assert that the square no longer holds the occupant after it has left the
+     * square.
+     */
+    @Test
+    void testLeave() {
+<span class="nc" id="L46">        Unit occupant = mock(Unit.class);</span>
+<span class="nc" id="L47">        square.put(occupant);</span>
+<span class="nc" id="L48">        square.remove(occupant);</span>
+
+<span class="nc" id="L50">        assertThat(square.getOccupants()).doesNotContain(occupant);</span>
+<span class="nc" id="L51">    }</span>
+
+    /**
+     * Assert that the order in which units entered the square is preserved.
+     */
+    @Test
+    void testOrder() {
+<span class="nc" id="L58">        Unit o1 = mock(Unit.class);</span>
+<span class="nc" id="L59">        Unit o2 = mock(Unit.class);</span>
+<span class="nc" id="L60">        square.put(o1);</span>
+<span class="nc" id="L61">        square.put(o2);</span>
+
+<span class="nc" id="L63">        assertThat(square.getOccupants()).containsSequence(o1, o2);</span>
+<span class="nc" id="L64">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LevelTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Tests in 'jpacman.test' Coverage Results</a> &gt; <a href="index.source.html" class="el_package">nl.tudelft.jpacman.level</a> &gt; <span class="el_source">LevelTest.java</span></div><h1>LevelTest.java</h1><pre class="source lang-java linenums">package nl.tudelft.jpacman.level;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import nl.tudelft.jpacman.board.Board;
+import nl.tudelft.jpacman.board.Square;
+import nl.tudelft.jpacman.npc.Ghost;
+
+import com.google.common.collect.Lists;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+/**
+ * Tests various aspects of level.
+ *
+ * @author Jeroen Roosen 
+ */
+// The four suppress warnings ignore the same rule, which results in 4 same string literals
+@SuppressWarnings({&quot;PMD.AvoidDuplicateLiterals&quot;, &quot;PMD.TooManyStaticImports&quot;})
+<span class="nc" id="L24">class LevelTest {</span>
+
+    /**
+     * The level under test.
+     */
+    private Level level;
+
+    /**
+     * An NPC on this level.
+     */
+<span class="nc" id="L34">    private final Ghost ghost = mock(Ghost.class);</span>
+
+    /**
+     * Starting position 1.
+     */
+<span class="nc" id="L39">    private final Square square1 = mock(Square.class);</span>
+
+    /**
+     * Starting position 2.
+     */
+<span class="nc" id="L44">    private final Square square2 = mock(Square.class);</span>
+
+    /**
+     * The board for this level.
+     */
+<span class="nc" id="L49">    private final Board board = mock(Board.class);</span>
+
+    /**
+     * The collision map.
+     */
+<span class="nc" id="L54">    private final CollisionMap collisions = mock(CollisionMap.class);</span>
+
+    /**
+     * Sets up the level with the default board, a single NPC and a starting
+     * square.
+     */
+    @BeforeEach
+    void setUp() {
+<span class="nc" id="L62">        final long defaultInterval = 100L;</span>
+<span class="nc" id="L63">        level = new Level(board, Lists.newArrayList(ghost), Lists.newArrayList(</span>
+            square1, square2), collisions);
+<span class="nc" id="L65">        when(ghost.getInterval()).thenReturn(defaultInterval);</span>
+<span class="nc" id="L66">    }</span>
+
+    /**
+     * Validates the state of the level when it isn't started yet.
+     */
+    @Test
+    void noStart() {
+<span class="nc" id="L73">        assertThat(level.isInProgress()).isFalse();</span>
+<span class="nc" id="L74">    }</span>
+
+    /**
+     * Validates the state of the level when it is stopped without starting.
+     */
+    @Test
+    void stop() {
+<span class="nc" id="L81">        level.stop();</span>
+<span class="nc" id="L82">        assertThat(level.isInProgress()).isFalse();</span>
+<span class="nc" id="L83">    }</span>
+
+    /**
+     * Validates the state of the level when it is started.
+     */
+    @Test
+    void start() {
+<span class="nc" id="L90">        level.start();</span>
+<span class="nc" id="L91">        assertThat(level.isInProgress()).isTrue();</span>
+<span class="nc" id="L92">    }</span>
+
+    /**
+     * Validates the state of the level when it is started then stopped.
+     */
+    @Test
+    void startStop() {
+<span class="nc" id="L99">        level.start();</span>
+<span class="nc" id="L100">        level.stop();</span>
+<span class="nc" id="L101">        assertThat(level.isInProgress()).isFalse();</span>
+<span class="nc" id="L102">    }</span>
+
+    /**
+     * Verifies registering a player puts the player on the correct starting
+     * square.
+     */
+    @Test
+    @SuppressWarnings(&quot;PMD.JUnitTestsShouldIncludeAssert&quot;)
+    void registerPlayer() {
+<span class="nc" id="L111">        Player p = mock(Player.class);</span>
+<span class="nc" id="L112">        level.registerPlayer(p);</span>
+<span class="nc" id="L113">        verify(p).occupy(square1);</span>
+<span class="nc" id="L114">    }</span>
+
+    /**
+     * Verifies registering a player twice does not do anything.
+     */
+    @Test
+    @SuppressWarnings(&quot;PMD.JUnitTestsShouldIncludeAssert&quot;)
+    void registerPlayerTwice() {
+<span class="nc" id="L122">        Player p = mock(Player.class);</span>
+<span class="nc" id="L123">        level.registerPlayer(p);</span>
+<span class="nc" id="L124">        level.registerPlayer(p);</span>
+<span class="nc" id="L125">        verify(p, times(1)).occupy(square1);</span>
+<span class="nc" id="L126">    }</span>
+
+    /**
+     * Verifies registering a second player puts that player on the correct
+     * starting square.
+     */
+    @Test
+    @SuppressWarnings(&quot;PMD.JUnitTestsShouldIncludeAssert&quot;)
+    void registerSecondPlayer() {
+<span class="nc" id="L135">        Player p1 = mock(Player.class);</span>
+<span class="nc" id="L136">        Player p2 = mock(Player.class);</span>
+<span class="nc" id="L137">        level.registerPlayer(p1);</span>
+<span class="nc" id="L138">        level.registerPlayer(p2);</span>
+<span class="nc" id="L139">        verify(p2).occupy(square2);</span>
+<span class="nc" id="L140">    }</span>
+
+    /**
+     * Verifies registering a third player puts the player on the correct
+     * starting square.
+     */
+    @Test
+    @SuppressWarnings(&quot;PMD.JUnitTestsShouldIncludeAssert&quot;)
+    void registerThirdPlayer() {
+<span class="nc" id="L149">        Player p1 = mock(Player.class);</span>
+<span class="nc" id="L150">        Player p2 = mock(Player.class);</span>
+<span class="nc" id="L151">        Player p3 = mock(Player.class);</span>
+<span class="nc" id="L152">        level.registerPlayer(p1);</span>
+<span class="nc" id="L153">        level.registerPlayer(p2);</span>
+<span class="nc" id="L154">        level.registerPlayer(p3);</span>
+<span class="nc" id="L155">        verify(p3).occupy(square1);</span>
+<span class="nc" id="L156">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

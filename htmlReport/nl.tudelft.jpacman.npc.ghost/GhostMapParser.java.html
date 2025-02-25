@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GhostMapParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Tests in 'jpacman.test' Coverage Results</a> &gt; <a href="index.source.html" class="el_package">nl.tudelft.jpacman.npc.ghost</a> &gt; <span class="el_source">GhostMapParser.java</span></div><h1>GhostMapParser.java</h1><pre class="source lang-java linenums">package nl.tudelft.jpacman.npc.ghost;
+
+import nl.tudelft.jpacman.board.BoardFactory;
+import nl.tudelft.jpacman.board.Square;
+import nl.tudelft.jpacman.level.LevelFactory;
+import nl.tudelft.jpacman.level.MapParser;
+import nl.tudelft.jpacman.npc.Ghost;
+
+import java.util.List;
+
+/**
+ * A test helper utility for writing the ghost unit tests.
+ * A useful method for retrieving ghosts from your map would be:
+ * findUnitInBoard in the Navigation class.
+ */
+public final class GhostMapParser extends MapParser {
+    private final GhostFactory ghostFactory;
+
+    /**
+     * Creates a new enhanced map parser.
+     * This map parser allows users to specify which ghost should be placed
+     * at an exact location.
+     *
+     * @param levelFactory The factory providing the NPC objects and the level.
+     * @param boardFactory The factory to create board elements.
+     * @param ghostFactory the factory to create the ghosts.
+     */
+    public GhostMapParser(LevelFactory levelFactory, BoardFactory boardFactory,
+                          GhostFactory ghostFactory) {
+<span class="nc" id="L30">        super(levelFactory, boardFactory);</span>
+<span class="nc" id="L31">        this.ghostFactory = ghostFactory;</span>
+<span class="nc" id="L32">    }</span>
+
+    //This method only supports clyde for now
+    //You should add extra cases for ghosts you need.
+    @Override
+    protected void addSquare(Square[][] grid, List&lt;Ghost&gt; ghosts,
+                             List&lt;Square&gt; startPositions, int x, int y, char c) {
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        switch (c) {</span>
+            case 'C':
+<span class="nc" id="L41">                grid[x][y] = makeGhostSquare(ghosts, ghostFactory.createClyde());</span>
+<span class="nc" id="L42">                break;</span>
+            default:
+<span class="nc" id="L44">                super.addSquare(grid, ghosts, startPositions, x, y, c);</span>
+        }
+<span class="nc" id="L46">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

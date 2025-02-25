@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LauncherSmokeTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Tests in 'jpacman.test' Coverage Results</a> &gt; <a href="index.source.html" class="el_package">nl.tudelft.jpacman</a> &gt; <span class="el_source">LauncherSmokeTest.java</span></div><h1>LauncherSmokeTest.java</h1><pre class="source lang-java linenums">package nl.tudelft.jpacman;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import nl.tudelft.jpacman.board.Direction;
+import nl.tudelft.jpacman.game.Game;
+import nl.tudelft.jpacman.level.Player;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+/**
+ * Smoke test launching the full game,
+ * and attempting to make a number of typical moves.
+ *
+ * This is &lt;strong&gt;not&lt;/strong&gt; a &lt;em&gt;unit&lt;/em&gt; test -- it is an end-to-end test
+ * trying to execute a large portion of the system's behavior directly from the
+ * user interface. It uses the actual sprites and monster AI, and hence
+ * has little control over what is happening in the game.
+ *
+ * Because it is an end-to-end test, it is somewhat longer
+ * and has more assert statements than what would be good
+ * for a small and focused &lt;em&gt;unit&lt;/em&gt; test.
+ *
+ * @author Arie van Deursen, March 2014.
+ */
+<span class="nc" id="L27">public class LauncherSmokeTest {</span>
+
+    private Launcher launcher;
+
+    /**
+     * Launch the user interface.
+     */
+    @BeforeEach
+    void setUpPacman() {
+<span class="nc" id="L36">        launcher = new Launcher();</span>
+<span class="nc" id="L37">        launcher.launch();</span>
+<span class="nc" id="L38">    }</span>
+
+    /**
+     * Quit the user interface when we're done.
+     */
+    @AfterEach
+    void tearDown() {
+<span class="nc" id="L45">        launcher.dispose();</span>
+<span class="nc" id="L46">    }</span>
+
+    /**
+     * Launch the game, and imitate what would happen in a typical game.
+     * The test is only a smoke test, and not a focused small test.
+     * Therefore it is OK that the method is a bit too long.
+     *
+     * @throws InterruptedException Since we're sleeping in this test.
+     */
+    @SuppressWarnings({&quot;magicnumber&quot;, &quot;methodlength&quot;, &quot;PMD.JUnitTestContainsTooManyAsserts&quot;})
+    @Test
+    void smokeTest() throws InterruptedException {
+<span class="nc" id="L58">        Game game = launcher.getGame();</span>
+<span class="nc" id="L59">        Player player = game.getPlayers().get(0);</span>
+
+        // start cleanly.
+<span class="nc" id="L62">        assertThat(game.isInProgress()).isFalse();</span>
+<span class="nc" id="L63">        game.start();</span>
+<span class="nc" id="L64">        assertThat(game.isInProgress()).isTrue();</span>
+<span class="nc" id="L65">        assertThat(player.getScore()).isZero();</span>
+
+        // get points
+<span class="nc" id="L68">        game.move(player, Direction.EAST);</span>
+<span class="nc" id="L69">        assertThat(player.getScore()).isEqualTo(10);</span>
+
+        // now moving back does not change the score
+<span class="nc" id="L72">        game.move(player, Direction.WEST);</span>
+<span class="nc" id="L73">        assertThat(player.getScore()).isEqualTo(10);</span>
+
+        // try to move as far as we can
+<span class="nc" id="L76">        move(game, Direction.EAST, 7);</span>
+<span class="nc" id="L77">        assertThat(player.getScore()).isEqualTo(60);</span>
+
+        // move towards the monsters
+<span class="nc" id="L80">        move(game, Direction.NORTH, 6);</span>
+<span class="nc" id="L81">        assertThat(player.getScore()).isEqualTo(120);</span>
+
+        // no more points to earn here.
+<span class="nc" id="L84">        move(game, Direction.WEST, 2);</span>
+<span class="nc" id="L85">        assertThat(player.getScore()).isEqualTo(120);</span>
+
+<span class="nc" id="L87">        move(game, Direction.NORTH, 2);</span>
+
+        // Sleeping in tests is generally a bad idea.
+        // Here we do it just to let the monsters move.
+<span class="nc" id="L91">        Thread.sleep(500L);</span>
+
+        // we're close to monsters, this will get us killed.
+<span class="nc" id="L94">        move(game, Direction.WEST, 10);</span>
+<span class="nc" id="L95">        move(game, Direction.EAST, 10);</span>
+<span class="nc" id="L96">        assertThat(player.isAlive()).isFalse();</span>
+
+<span class="nc" id="L98">        game.stop();</span>
+<span class="nc" id="L99">        assertThat(game.isInProgress()).isFalse();</span>
+<span class="nc" id="L100">    }</span>
+
+    /**
+     * Make number of moves in given direction.
+     *
+     * @param game The game we're playing
+     * @param dir The direction to be taken
+     * @param numSteps The number of steps to take
+     */
+    public static void move(Game game, Direction dir, int numSteps) {
+<span class="nc" id="L110">        Player player = game.getPlayers().get(0);</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        for (int i = 0; i &lt; numSteps; i++) {</span>
+<span class="nc" id="L112">            game.move(player, dir);</span>
+        }
+<span class="nc" id="L114">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

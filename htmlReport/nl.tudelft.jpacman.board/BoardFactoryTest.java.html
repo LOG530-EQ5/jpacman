@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BoardFactoryTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Tests in 'jpacman.test' Coverage Results</a> &gt; <a href="index.source.html" class="el_package">nl.tudelft.jpacman.board</a> &gt; <span class="el_source">BoardFactoryTest.java</span></div><h1>BoardFactoryTest.java</h1><pre class="source lang-java linenums">package nl.tudelft.jpacman.board;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import nl.tudelft.jpacman.sprite.PacManSprites;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+
+/**
+ * Tests the linking of squares done by the board factory.
+ *
+ * @author Jeroen Roosen 
+ */
+<span class="nc" id="L17">class BoardFactoryTest {</span>
+
+    /**
+     * The factory under test.
+     */
+    private BoardFactory factory;
+
+    /**
+     * Square on the board to test.
+     */
+    private Square s1;
+
+    /**
+     * Square on the board to test.
+     */
+    private Square s2;
+
+    /**
+     * Resets the factory under test.
+     */
+    @BeforeEach
+    void setUp() {
+<span class="nc" id="L39">        PacManSprites sprites = mock(PacManSprites.class);</span>
+<span class="nc" id="L40">        factory = new BoardFactory(sprites);</span>
+
+<span class="nc" id="L42">        s1 = new BasicSquare();</span>
+<span class="nc" id="L43">        s2 = new BasicSquare();</span>
+<span class="nc" id="L44">    }</span>
+
+    /**
+     * Verifies that a single cell is connected to itself on all sides.
+     */
+    @Test
+    void worldIsRound() {
+<span class="nc" id="L51">        factory.createBoard(new Square[][]{{s1}});</span>
+<span class="nc" id="L52">        assertThat(Arrays.stream(Direction.values()).map(s1::getSquareAt)).containsOnly(s1);</span>
+<span class="nc" id="L53">    }</span>
+
+    /**
+     * Verifies a chain of cells is connected to the east.
+     */
+    @Test
+    void connectedEast() {
+<span class="nc" id="L60">        factory.createBoard(new Square[][]{{s1}, {s2}});</span>
+<span class="nc" id="L61">        assertThat(s1.getSquareAt(Direction.EAST)).isEqualTo(s2);</span>
+<span class="nc" id="L62">        assertThat(s2.getSquareAt(Direction.EAST)).isEqualTo(s1);</span>
+<span class="nc" id="L63">    }</span>
+
+    /**
+     * Verifies a chain of cells is connected to the west.
+     */
+    @Test
+    void connectedWest() {
+<span class="nc" id="L70">        factory.createBoard(new Square[][]{{s1}, {s2}});</span>
+<span class="nc" id="L71">        assertThat(s1.getSquareAt(Direction.WEST)).isEqualTo(s2);</span>
+<span class="nc" id="L72">        assertThat(s2.getSquareAt(Direction.WEST)).isEqualTo(s1);</span>
+<span class="nc" id="L73">    }</span>
+
+    /**
+     * Verifies a chain of cells is connected to the north.
+     */
+    @Test
+    void connectedNorth() {
+<span class="nc" id="L80">        factory.createBoard(new Square[][]{{s1, s2}});</span>
+<span class="nc" id="L81">        assertThat(s1.getSquareAt(Direction.NORTH)).isEqualTo(s2);</span>
+<span class="nc" id="L82">        assertThat(s2.getSquareAt(Direction.NORTH)).isEqualTo(s1);</span>
+<span class="nc" id="L83">    }</span>
+
+    /**
+     * Verifies a chain of cells is connected to the south.
+     */
+    @Test
+    void connectedSouth() {
+<span class="nc" id="L90">        factory.createBoard(new Square[][]{{s1, s2}});</span>
+<span class="nc" id="L91">        assertThat(s1.getSquareAt(Direction.SOUTH)).isEqualTo(s2);</span>
+<span class="nc" id="L92">        assertThat(s2.getSquareAt(Direction.SOUTH)).isEqualTo(s1);</span>
+<span class="nc" id="L93">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

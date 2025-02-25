@@ -60,10 +60,12 @@ jacoco {
 }
 
 jacocoTestReport {
-    executionData tasks.withType(Test)
+    dependsOn test
+    executionData fileTree(dir: buildDir, includes: ['jacoco/test.exec'])
     reports {
         csv.enabled true
         xml.enabled true
+        html.enabled true
     }
 }
 

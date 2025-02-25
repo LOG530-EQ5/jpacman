@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JPacmanFuzzer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Tests in 'jpacman.test' Coverage Results</a> &gt; <a href="index.source.html" class="el_package">nl.tudelft.jpacman.fuzzer</a> &gt; <span class="el_source">JPacmanFuzzer.java</span></div><h1>JPacmanFuzzer.java</h1><pre class="source lang-java linenums">package nl.tudelft.jpacman.fuzzer;
+
+import nl.tudelft.jpacman.Launcher;
+import nl.tudelft.jpacman.board.Direction;
+import nl.tudelft.jpacman.game.Game;
+import nl.tudelft.jpacman.level.Player;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.RepetitionInfo;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.Random;
+
+/**
+ * A basic fuzzer trying out random moves and writing logs in output files. Number of runs is a
+ * tunable parameter. Each run initiates the game and is played until PacMan dies.
+ *
+ * @author Azqa Nadeem
+ */
+@Disabled
+<span class="nc" id="L29">class JPacmanFuzzer {</span>
+    private static final int RUNS = 5;
+    private static final String LOG_HEADER =
+        &quot;isAlive, hasCollided, currentDirection, nextDirection, remainingPellets, score&quot;;
+    private static final String BASE_LOG_DIRECTORY = &quot;behavioral-analysis/logs&quot;;
+
+    private static File logDirectory;
+
+    private Launcher launcher;
+
+    /**
+     * Sets and cleans up directory for storing logs.
+     *
+     * @throws IOException when file/folder can't be created.
+     */
+    @BeforeAll
+    static void setUpLogging() throws IOException {
+<span class="nc" id="L46">        logDirectory = new File(BASE_LOG_DIRECTORY, Long.toString(System.currentTimeMillis()));</span>
+<span class="nc bnc" id="L47" title="All 4 branches missed.">        if (!logDirectory.exists() &amp;&amp; !logDirectory.mkdirs()) {</span>
+<span class="nc" id="L48">            throw new IOException(&quot;Directory `behavioral-analysis/` could not be created.&quot;);</span>
+        }
+<span class="nc" id="L50">    }</span>
+
+    /**
+     * Launch the user interface.
+     */
+    @BeforeEach
+    void setUpGame() {
+<span class="nc" id="L57">        launcher = new Launcher();</span>
+<span class="nc" id="L58">        launcher.launch();</span>
+<span class="nc" id="L59">    }</span>
+
+    /**
+     * Quit the user interface when we're done.
+     *
+     * @throws IOException when log writer cannot be closed.
+     */
+    @AfterEach
+    void tearDown() throws IOException {
+<span class="nc" id="L68">        launcher.dispose();</span>
+<span class="nc" id="L69">    }</span>
+
+    /**
+     * Basic fuzzer implementation.
+     *
+     * @param repetitionInfo repeated test information
+     * @throws IOException when the log write created.
+     */
+    @RepeatedTest(RUNS)
+    void fuzzerTest(RepetitionInfo repetitionInfo) throws IOException {
+<span class="nc" id="L79">        Game game = launcher.getGame();</span>
+<span class="nc" id="L80">        Direction chosen = Direction.EAST;</span>
+
+<span class="nc" id="L82">        String logFileName = &quot;log_&quot; + repetitionInfo.getCurrentRepetition() + &quot;.txt&quot;;</span>
+<span class="nc" id="L83">        File logFile = new File(logDirectory, logFileName);</span>
+
+<span class="nc" id="L85">        try (BufferedWriter logWriter = new BufferedWriter(new OutputStreamWriter(</span>
+            new FileOutputStream(logFile, true), StandardCharsets.UTF_8))) {
+
+<span class="nc" id="L88">            logWriter.write(LOG_HEADER);</span>
+
+            try {
+<span class="nc" id="L91">                game.start();</span>
+
+<span class="nc bnc" id="L93" title="All 2 branches missed.">                while (game.isInProgress()) {</span>
+<span class="nc" id="L94">                    chosen = getRandomDirection();</span>
+
+<span class="nc" id="L96">                    log(logWriter, chosen);</span>
+<span class="nc" id="L97">                    game.getLevel().move(game.getPlayers().get(0), chosen);</span>
+                }
+<span class="nc" id="L99">            } catch (RuntimeException e) {</span>
+                // Runtime exceptions should not stop the execution of the fuzzer
+            } finally {
+<span class="nc" id="L102">                log(logWriter, chosen);</span>
+<span class="nc" id="L103">                game.stop();</span>
+            }
+        }
+<span class="nc" id="L106">    }</span>
+
+    private Direction getRandomDirection() {
+<span class="nc" id="L109">        return Direction.values()[new Random().nextInt(Direction.values().length)];</span>
+    }
+
+    private void log(BufferedWriter logWriter, Direction chosen) throws IOException {
+<span class="nc" id="L113">        Game game = launcher.getGame();</span>
+<span class="nc" id="L114">        Player player = game.getPlayers().get(0);</span>
+
+<span class="nc" id="L116">        logWriter.write(</span>
+<span class="nc" id="L117">            String.format(</span>
+                &quot;%n%b %b %s %s %d %d&quot;,
+<span class="nc" id="L119">                player.isAlive(),</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">                (player.getKiller() != null),</span>
+<span class="nc" id="L121">                player.getDirection(),</span>
+                chosen,
+<span class="nc" id="L123">                game.getLevel().remainingPellets(),</span>
+<span class="nc" id="L124">                player.getScore()</span>
+            )
+        );
+<span class="nc" id="L127">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
